@@ -113,7 +113,7 @@
 		(type STRING))
 	(slot serie
 		(type STRING)
-		(default ?DERIVE)))
+		(default "-")))
 
 
 ;REGOLE PER LA CLASSIFICAZIONE DELL'UTENTE
@@ -146,6 +146,7 @@
 		     (assert (autore no)))
 
 	(case 3 then 
+		     (assert (lungo indifferente))
 		     (assert (autore si)))
 ))
 
@@ -222,7 +223,7 @@
 (printout t "Vorresti leggere un libro con molte pagine?" crlf)
 (printout t "1)Si" crlf)
 (printout t "2)No" crlf)
-(printout t "3)Indifferente" crlf)
+(printout t "3)Entrambi" crlf)
 (bind ?scelta (Domanda " " 1 2 3))
 (switch ?scelta
 	(case 1 then
@@ -237,10 +238,10 @@
 (autore ?)
 (not (divertente ?))
 =>
-(printout t "Scegli un aggettivo che pensi un buon romanzo debba avere" crlf)
+(printout t "Secondo te un buon romanzo è:" crlf)
 (printout t "1)Divertente" crlf)
 (printout t "2)Serio" crlf)
-(printout t "3)Indifferente" crlf)
+(printout t "3)Entrambi" crlf)
 (bind ?scelta (Domanda " " 1 2 3))
 (switch ?scelta 
 	(case 1 then
@@ -266,10 +267,10 @@
 (autore ?)
 (not (imprevedibile ?))
 =>
-(printout t "Scegli un aggettivo che pensi un buon romanzo debba avere" crlf)
+(printout t "Secondo te un buon romanzo è:" crlf)
 (printout t "1)Imprevedibile" crlf)
 (printout t "2)Tranquillo" crlf)
-(printout t "3)Indifferente" crlf)
+(printout t "3)Entrambi" crlf)
 (bind ?scelta (Domanda " " 1 2 3))
 (switch ?scelta 
 	(case 1 then
@@ -295,10 +296,10 @@
 (autore ?)
 (not (leggero ?))
 =>
-(printout t "Scegli un aggettivo che pensi un buon romanzo debba avere" crlf)
+(printout t "Secondo te un buon romanzo è:" crlf)
 (printout t "1)Impegnativo" crlf)
 (printout t "2)Leggero" crlf)
-(printout t "3)Indifferente" crlf)
+(printout t "3)Entrambi" crlf)
 (bind ?scelta (Domanda " " 1 2 3))
 (switch ?scelta 
 	(case 1 then
@@ -309,11 +310,29 @@
 		(assert (leggero indifferente))))
 )
 
+(defrule intenso
+(autore ?)
+(not (intenso ?))
+=>
+(printout t "Secondo te un buon romanzo è:" crlf)
+(printout t "1)Intenso" crlf)
+(printout t "2)Riflessivo" crlf)
+(printout t "3)Entrambi" crlf)
+(bind ?scelta (Domanda " " 1 2 3))
+(switch ?scelta 
+	(case 1 then
+		(assert (intenso si)))
+	(case 2 then
+		(assert (intenso no)))
+	(case 3 then
+		(assert (intenso indifferente))))
+)
+
 (defrule serie
 (autore ?)
 (not (serie ?))
 =>
-(printout t "Ti piacerebbe leggere un romanzo che fa parte di una serie? (Trilogie, Cicli...)" crlf)
+(printout t "Cerchi un romanzo che faccia parte di una serie? (Trilogie, Cicli...)" crlf)
 (printout t "1)Si" crlf)
 (printout t "2)No" crlf)
 (printout t "3)Indifferente" crlf)
@@ -361,6 +380,7 @@
 (declare (salience -5000))
 ?x <- (trovato)
 =>
+(printout t crlf "RATING FORNITI DAGLI UTENTI DI www.goodreads.com!" crlf)
 (printout t crlf "Li hai già letti o non credi possano piacerti questi titoli?" crlf)
 (printout t "1)Riprova" crlf)
 (printout t "2)Modifica qualche risposta" crlf)
@@ -389,6 +409,7 @@
 ?espl <- (esplicito ?attr5)
 ?lun <- (lungo ?attr6)
 ?div <- (divertente ?attr7)
+?int <- (intenso ?attr8)
 =>
 (printout t "Si sono scelte le seguenti caratteristiche per il libro da trovare: " crlf)
 (switch ?attr1
@@ -433,7 +454,15 @@
 		(printout t "7)Serio" crlf))
 	(case indifferente then
 		(printout t "7)Divertente/Serio" crlf)))
-(printout t "8)Riprova" crlf)
+(switch ?attr8
+	(case si then
+		(printout t "8)Intenso" crlf))
+	(case no then
+		(printout t "8)Riflessivo" crlf))
+	(case indifferente then
+		(printout t "8)Intenso/Riflessivo" crlf)))
+
+(printout t "9)Riprova" crlf)
 
 (printout t "Scegliere la caratteristica da ritrattare: ")
 (bind ?scelta (Domanda " " 1 2 3 4 5 6 7 8 ))
@@ -445,7 +474,8 @@
 	(case 5 then (retract ?espl))
 	(case 6 then (retract ?lun))
 	(case 7 then (retract ?div))
-	(case 8 then (retract ?rit)))
+	(case 8 then (retract ?int))
+	(case 9 then (retract ?rit)))
 )
 
  
@@ -459,10 +489,278 @@
 (esplicito no)
 (lungo no|indifferente)
 (divertente no|indifferente)
+(intenso si|indifferente)
 =>
-(assert (libro (nome "The Casual Vacancy") (punteggio 3.26) (autore "J.K.Rowling") (serie "-")))
+(assert (libro (nome "The Casual Vacancy") (punteggio 3.26) (autore "J.K.Rowling")))
 (assert (trovato))
 )
+
+(defrule lo-hobbit
+(imprevedibile si|indifferente)
+(violento si)
+(leggero no|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Lo Hobbit") (punteggio 4.22) (autore "J.R.R. Tolkien")))
+(assert (trovato))
+)
+
+(defrule il-signore-degli-anelli
+(imprevedibile si|indifferente)
+(violento si)
+(leggero no|indifferente)
+(serie si|indifferente)
+(esplicito no|si)
+(lungo si|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Il Signore degli Anelli") (punteggio 4.40) (autore "J.R.R Tolkien") (serie "Il Signore degli Anelli")))
+(assert (trovato))
+)
+
+(defrule il-silmarillion
+(imprevedibile no|indifferente)
+(violento si)
+(leggero no|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo si|indifferente)
+(divertente no|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "Il Silmarillion") (punteggio 3.84) (autore "J.R.R Tolkien")))
+(assert (trovato))
+)
+
+(defrule racconto-di-due-città
+(imprevedibile no|indifferente)
+(violento si)
+(leggero no|indifferente)
+(serie no|indifferente)
+(esplicito si)
+(lungo si|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Racconto di Due Città") (punteggio 3.78) (autore "Charles Dickens")))
+(assert (trovato))
+)
+
+(defrule oliver-twist
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Oliver Twist") (punteggio 3.83) (autore "Charles Dickens")))
+(assert (trovato))
+)
+
+(defrule david-copperfield
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero no|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo si|indifferente)
+(divertente no|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "David Copperfield") (punteggio 3.94) (autore "Charles Dickens")))
+(assert (trovato))
+)
+
+(defrule uno-studio-in-rosso
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente si|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Uno Studio in Rosso") (punteggio 4.13) (autore "Sir Arthur Conan Doyle")))
+(assert (trovato))
+)
+
+(defrule il-mastino-dei-baskerville
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente si|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Il Mastino dei Baskerville") (punteggio 4.06) (autore "Sir Arthur Conan Doyle")))
+(assert (trovato))
+)
+
+(defrule la-valle-della-paura
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente si|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "La Valle della Paura") (punteggio 4.20) (autore "Sir Arthur Conan Doyle")))
+(assert (trovato))
+)
+
+(defrule io-robot
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie si|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Io,Robot") (punteggio 4.14) (autore "Isaac Asimov") (serie "Ciclo dei Robot")))
+(assert (trovato))
+)
+
+(defrule abissi-acciaio
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie si|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Abissi d'Acciaio") (punteggio 4.12) (autore "Isaac Asimov") (serie "Ciclo dei Robot")))
+(assert (trovato))
+)
+
+(defrule il-sole-nudo
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie si|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "Il Sole Nudo") (punteggio 4.09) (autore "Isaac Asimov") (serie "Ciclo dei Robot")))
+(assert (trovato))
+)
+
+(defrule millenovecentoottantaquattro
+(imprevedibile si|indifferente)
+(violento si)
+(leggero no|indifferente)
+(serie no|indifferente)
+(esplicito si)
+(lungo no|indifferente)
+(divertente no|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "1984") (punteggio 4.80) (autore "George Orwell")))
+(assert (trovato))
+)
+
+(defrule la-fattoria-degli-animali
+(imprevedibile no|indifferente)
+(violento no|si)
+(leggero no|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(lungo no|indifferente)
+(divertente no|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "La Fattoria degli Animali") (punteggio 3.83) (autore "George Orwell")))
+(assert (trovato))
+)
+
+(defrule la-caduta-dei-giganti
+(imprevedibile no|indifferente)
+(violento si)
+(leggero si|indifferente)
+(serie si|indifferente)
+(esplicito si)
+(lungo si|indifferente)
+(divertente no|indifferente)
+(intenso si|indifferente)
+=>
+(assert (libro (nome "La Caduta dei Giganti") (punteggio 4.22) (autore "Ken Follett") (serie "Trilogia del Secolo")))
+(assert (trovato))
+)
+
+(defrule l-ombra-dello-scorpione
+(imprevedibile si|indifferente)
+(violento si)
+(leggero si|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(divertente no|indifferente)
+(lungo si|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "L'Ombra dello Scorpione") (punteggio 4.32) (autore "Stephen King")))
+(assert (trovato))
+)
+
+(defrule l-ultimo-cavaliere
+(imprevedibile si|indifferente)
+(violento si)
+(leggero no|indifferente)
+(serie si|indifferente)
+(esplicito si)
+(divertente no|indifferente)
+(lungo no|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "L'Ultimo Cavaliere") (punteggio 4.00) (autore "Stephen King") (serie "Saga della Torre Nera")))
+(assert (trovato))
+)
+
+(defrule le-avventure-di-huckleberry-finn
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(divertente si|indifferente)
+(lungo no|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "Le Avventure di Huckleberry Finn") (punteggio 3.66) (autore "Mark Twain")))
+(assert (trovato))
+)
+
+(defrule lo-strano-caso-del-dr
+(imprevedibile si|indifferente)
+(violento no|si)
+(leggero si|indifferente)
+(serie no|indifferente)
+(esplicito no|si)
+(divertente no|indifferente)
+(lungo no|indifferente)
+(intenso no|indifferente)
+=>
+(assert (libro (nome "Lo Strano Caso del Dr. Jeckill e Mr. Hyde") (punteggio 3.70) (autore "Fernando Marìas")))
+(assert (trovato))
+)
+
 
 ;STAMPA RISULTATO
 
@@ -471,7 +769,7 @@
 (trovato)
 (libro (nome ?nome) (punteggio ?punteggio) (autore ?autore) (serie ?serie))
 =>
-(printout t "-  Titolo: " ?nome "  Rating: " ?punteggio "  Autore: " ?autore "  Serie: " ?serie crlf)
+(printout t "-  TITOLO: " ?nome "  RATING: " ?punteggio "/5" "  AUTORE: " ?autore "  SERIE: " ?serie crlf)
 )
 
 
