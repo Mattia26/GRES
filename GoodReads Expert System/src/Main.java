@@ -18,14 +18,13 @@ public class Main extends Application {
 	
 	public static void main(String args[]){
 		clips.load("GRES.clp");
-		clips.assertString("(interfaccia)");
 		
 		launch(args);
 	}
 
 public void start(Stage stage) throws IOException{
 	
-	DefaultChoises.classificazioneUtente();
+	Utility.classificazioneUtente();
 
 	
 	
@@ -33,9 +32,8 @@ public void start(Stage stage) throws IOException{
 	Parent root = FXMLLoader.load(getClass().getResource("GUI.fxml"));
 	
 	Scene sc = new Scene(root,600,400);
-	sc.getStylesheets().add(
-			getClass().getResource("Style.css").toExternalForm());
-    stage.setTitle("GRES");
+	
+    stage.setTitle("GoodReads Expert System");
     stage.setScene(sc);
     stage.setResizable(false);
     stage.show();

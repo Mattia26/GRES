@@ -12,6 +12,9 @@
 	
 	-fx-border-color: #000000;
 }
-.separator{
-	
+
+.label:hover{
+	-fx-text-fill: #ff0000;
 }
+
+

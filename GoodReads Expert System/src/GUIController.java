@@ -212,7 +212,7 @@ public class GUIController implements Initializable{
 				Main.clips.assertString("(intenso indifferente)");
 			
 			Main.clips.run();
-			ArrayList<String> titoli = DefaultChoises.getTitoli();
+			ArrayList<String> titoli = Utility.getTitoli();
 			
 			lista.setItems((FXCollections.observableArrayList(titoli)));
 			
@@ -229,6 +229,52 @@ public class GUIController implements Initializable{
 
 		}
 		
+	}
+	
+	@FXML
+	public void aiuto0(){
+		Utility.messaggio("Aiuto", "Per utilizzare il sistema scegli gli aggettivi"
+				+ "che più si addicono ai tuoi gusti,\n la scelta  'Entrambi' implica che"
+				+ "ti è indifferente una caratteristica o l'altra.\n Una volta selezionato"
+				+ "un elemento per ogni riga premi il tasto conferma (oppure premi spazio)\n"
+				+ "e sulla destra vedrai apparire i titoli dei romanzi che l'applicazione"
+				+ "ha scelto per te\n fiancheggiati da un punteggio che va da 0 a 5."
+				+ "Premere OK per continuare.");
+	}
+	
+	@FXML
+	public void help4(){
+		Utility.messaggio("Divertente/Serio", "Un romanzo divertente contiene situazioni esilaranti e generalmente\n" 
+	       + "ha un tono goliardico e leggero, un romanzo serio invece ha una trama\n"
+	       + "creata con lo scopo di raccontare avvenimenti più reali che suscitano\n"
+	       + "più che un sorriso, una riflessione. Premere OK per continuare.");
+	}
+	
+	@FXML
+	public void help5(){
+		Utility.messaggio("Intenso/Riflessivo", "Un libro intenso si concentra principalmente sulla trama e cattura il lettore in un\n" 
+				+ "vortice di eventi di solito senza o con pochissimi momenti di respiro; un romanzo riflessivo\n"
+				+ "invece, si sofferma spesso sugli eventi per analizzare i pensieri e le emozioni dei personaggi,\n" 
+				+ "si tratta di un tipo di scrittura più descrittiva e lenta che porta appunto a riflettere.\n"
+				+ "Premere OK per continuare" );
+	}
+	@FXML
+	public void help7(){
+		Utility.messaggio("Leggero/Impegnativo","Un romanzo leggero è più facile da leggere, il linguaggio è più semplice e la trama\n"
+				 + "non troppo complicata, un romanzo impegnativo al contrario, necessita una discreta quantità\n"  
+					+ "di concentrazione per essere letto e apprezzato.Premere INVIO per continuare");
+	}
+	@FXML
+	public void help8(){
+		Utility.messaggio("Imprevedibile/Tranquillo", "Un romanzo imprevedibile ha una trama ricca di colpi di scena, i personaggi\n"
+				+ "evolvono in maniera più brusca e veloce rispetto a un romanzo con una trama più\n"
+				+ "piatta che si concentra sull'aspetto caratteriale dei personaggi e sulla psicologia delle\n"
+				+ "situazioni raccontate.Premere OK per continuare");
+	}
+	
+	@FXML
+	public void rating(){
+		Utility.messaggio("Ratings", "I punteggi qui mostrati vengono da www.goodreads.com");
 	}
 	
 
