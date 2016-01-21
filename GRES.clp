@@ -7,6 +7,7 @@
 
 (defrule benvenuto
 (not (presentazione))
+(not (interfaccia))
 =>
 (printout t "'It  is  a long tail, certainly said Alice, looking down" crlf)
 (printout t "with wonder at the Mouse's tail; 'but why do you call it" crlf)
@@ -85,6 +86,7 @@
 	then (bind ?risposta (lowcase ?risposta)) )
 	(while (not (member$ ?risposta ?valori_ammessi)) do
 	(format t "Valore non valido, riprovare!")
+	(printout t crlf)
 	(bind ?risposta (read))
 	( if (lexemep ?risposta)
 	then (bind ?risposta (lowcase ?risposta)) )
@@ -120,6 +122,7 @@
 
 (defrule età
 (presentazione)
+(not (interfaccia))
 =>
 (bind ?eta (DomandaB "Età del lettore? (Inserire un valore numerico)"))
 (if (< ?eta 16)  then (assert (esplicito no)))
@@ -130,6 +133,7 @@
 
 (defrule lettore-accanito
 (presentazione)
+(not (interfaccia))
 =>
 (printout t "Quante ore dedichi alla lettura settimanalmente?" crlf)
 (printout t "1)0" crlf)
@@ -155,7 +159,7 @@
 
 (defrule domanda-autori
 (declare (salience 10000))
-(autore si)
+?x <- (autore si)
 (età)
 (not (esplicito ?))
 (not (violento ?))
@@ -170,7 +174,8 @@
 (printout t "7) Ken Follet" crlf)
 (printout t "8) Stephen King" crlf)
 (printout t "9) Nessuno di questi" crlf)
-(bind ?scelta (Domanda " " 1 2 3 4 5 6 7 8 9))
+(printout t "10)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4 5 6 7 8 9 10))
 (switch ?scelta
 	(case 1 then 
 		(assert (imprevedibile si))
@@ -212,6 +217,9 @@
 		(assert (esplicito si))
 		(assert (leggero si))
 		(assert (serie si)))
+	(case 10 then
+		(assert (aiuto autore))
+		(retract ?x))
 ))
 
 ;REGOLE PER DOMANDE GENERALI
@@ -223,7 +231,7 @@
 (printout t "Vorresti leggere un libro con molte pagine?" crlf)
 (printout t "1)Si" crlf)
 (printout t "2)No" crlf)
-(printout t "3)Entrambi" crlf)
+(printout t "3)Indifferente" crlf)
 (bind ?scelta (Domanda " " 1 2 3))
 (switch ?scelta
 	(case 1 then
@@ -242,14 +250,17 @@
 (printout t "1)Divertente" crlf)
 (printout t "2)Serio" crlf)
 (printout t "3)Entrambi" crlf)
-(bind ?scelta (Domanda " " 1 2 3))
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
 	(case 1 then
 		(assert (divertente si)))
 	(case 2 then
 		(assert (divertente no)))
 	(case 3 then
-		(assert (divertente indifferente))))
+		(assert (divertente indifferente)))
+	(case 4 then 
+		(assert (aiuto divertente))))
 )
 
 (defrule esplicito
@@ -271,14 +282,17 @@
 (printout t "1)Imprevedibile" crlf)
 (printout t "2)Tranquillo" crlf)
 (printout t "3)Entrambi" crlf)
-(bind ?scelta (Domanda " " 1 2 3))
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
 	(case 1 then
 		(assert (imprevedibile si)))
 	(case 2 then
 		(assert (imprevedibile no)))
 	(case 3 then
-		(assert (imprevedibile indifferente))))
+		(assert (imprevedibile indifferente)))
+	(case 4 then
+		(assert (aiuto imprevedibile))))
 )
 
 (defrule violenza
@@ -300,14 +314,17 @@
 (printout t "1)Impegnativo" crlf)
 (printout t "2)Leggero" crlf)
 (printout t "3)Entrambi" crlf)
-(bind ?scelta (Domanda " " 1 2 3))
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
 	(case 1 then
 		(assert (leggero no)))
 	(case 2 then
 		(assert (leggero si)))
 	(case 3 then
-		(assert (leggero indifferente))))
+		(assert (leggero indifferente)))
+	(case 4 then
+		(assert (aiuto leggero))))
 )
 
 (defrule intenso
@@ -318,14 +335,17 @@
 (printout t "1)Intenso" crlf)
 (printout t "2)Riflessivo" crlf)
 (printout t "3)Entrambi" crlf)
-(bind ?scelta (Domanda " " 1 2 3))
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
 	(case 1 then
 		(assert (intenso si)))
 	(case 2 then
 		(assert (intenso no)))
 	(case 3 then
-		(assert (intenso indifferente))))
+		(assert (intenso indifferente)))
+	(case 4 then
+		(assert (aiuto intenso))))
 )
 
 (defrule serie
@@ -346,6 +366,125 @@
 		(assert (serie indifferente))))
 )
 
+;REGOLE DI AIUTO
+
+(defrule aiuto-autore
+?x <- (aiuto autore)
+=>
+(printout t crlf "Cerca di selezionare l'autore i cui romanzi rispecchiano" crlf
+	    "in modo più efficace i tuoi gusti personali, se sei in dubbio" crlf
+	    "non preoccuparti e seleziona semplicemente l'opzione 'Nessuno di questi'" crlf
+	    "il processo di ricerca non sarà influenzato in maniera negativa." crlf
+	    "Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(assert (autore si))
+)
+
+(defrule aiuto-divertente
+?x <- (aiuto divertente)
+=>
+(printout t crlf "Un romanzo divertente contiene situazioni esilaranti e generalmente" crlf
+	       "ha un tono goliardico e leggero, un romanzo serio invece ha una trama" crlf
+	       "creata con lo scopo di raccontare avvenimenti più reali che suscitano" crlf
+	       "più che un sorriso, una riflessione. Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t "Secondo te un buon romanzo è:" crlf)
+(printout t "1)Divertente" crlf)
+(printout t "2)Serio" crlf)
+(printout t "3)Entrambi" crlf)
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (divertente si)))
+	(case 2 then
+		(assert (divertente no)))
+	(case 3 then
+		(assert (divertente indifferente)))
+	(case 4 then 
+		(assert (aiuto divertente))))
+)
+
+
+(defrule aiuto-imprevedibile
+?x <- (aiuto imprevedibile)
+=>
+(printout t crlf "Un romanzo imprevedibile ha una trama ricca di colpi di scena, i personaggi" crlf
+		"evolvono in maniera più brusca e veloce rispetto a un romanzo con una trama più" crlf
+		"piatta che si concentra più sull'aspetto caratteriale dei personaggi e sulla psicologia delle" crlf
+		"situazioni raccontate.Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t "Secondo te un buon romanzo è:" crlf)
+(printout t "1)Imprevedibile" crlf)
+(printout t "2)Tranquillo" crlf)
+(printout t "3)Entrambi" crlf)
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (imprevedibile si)))
+	(case 2 then
+		(assert (imprevedibile no)))
+	(case 3 then
+		(assert (imprevedibile indifferente)))
+	(case 4 then
+		(assert (aiuto imprevedibile))))
+)
+
+(defrule aiuto-leggero
+?x <- (aiuto leggero)
+=>
+(printout t crlf "Un romanzo leggero è più facile da leggere, il linguaggio è più semplice e la trama " crlf
+		 "non troppo complicata, un romanzo impegnativo al contrario necessita una discreta quantità " crlf 
+		"di concentrazione per essere letto e apprezzato.Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t "Secondo te un buon romanzo è:" crlf)
+(printout t "1)Impegnativo" crlf)
+(printout t "2)Leggero" crlf)
+(printout t "3)Entrambi" crlf)
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (leggero no)))
+	(case 2 then
+		(assert (leggero si)))
+	(case 3 then
+		(assert (leggero indifferente)))
+	(case 4 then
+		(assert (aiuto leggero))))
+)
+
+(defrule aiuto-intenso
+?x <- (aiuto intenso)
+=>
+(printout t crlf "Un libro intenso si concentra principalmente sulla trama e cattura il lettore in un " crlf
+		"vortice di eventi di solito senza o con pochissimi momenti di respiro; un romanzo riflessivo " crlf
+		"invece, si sofferma spesso su eventi per analizzare i pensieri e le emozioni dei personaggi, " crlf
+		"si tratta di un tipo di scrittura più descrittiva e lenta che porta appunto a riflettere. " crlf
+		"Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t "Secondo te un buon romanzo è:" crlf)
+(printout t "1)Intenso" crlf)
+(printout t "2)Riflessivo" crlf)
+(printout t "3)Entrambi" crlf)
+(printout t "4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (intenso si)))
+	(case 2 then
+		(assert (intenso no)))
+	(case 3 then
+		(assert (intenso indifferente)))
+	(case 4 then
+		(assert (aiuto intenso))))
+)
 
 ;REGOLE DI FINE ESECUZIONE
 
@@ -353,8 +492,9 @@
 (declare (salience -10000))
 (not (trovato))
 (not (ritratta))
+(not (interfaccia))
 =>
-(printout t "Mi dispiace, non sono riuscito a trovare nessun libro" crlf)
+(printout t crlf "Mi dispiace, non sono riuscito a trovare nessun libro" crlf)
 (printout t "con le caratteristiche richieste, ora puoi procedere nei seguenti modi:" crlf)
 (printout t "1)Provare a cercare un altro libro" crlf)
 (printout t "2)Modificare qualche risposta" crlf)
@@ -372,6 +512,7 @@
 (defrule successo
 (declare (salience -1000))
 (trovato)
+(not (interfaccia))
 =>
 (printout t crlf "I seguenti libri probabilmente fanno per te: " crlf)
 )
@@ -379,6 +520,7 @@
 (defrule menu-finale
 (declare (salience -5000))
 ?x <- (trovato)
+(not (interfaccia))
 =>
 (printout t crlf "RATING FORNITI DAGLI UTENTI DI www.goodreads.com!" crlf)
 (printout t crlf "Li hai già letti o non credi possano piacerti questi titoli?" crlf)
@@ -465,7 +607,7 @@
 (printout t "9)Riprova" crlf)
 
 (printout t "Scegliere la caratteristica da ritrattare: ")
-(bind ?scelta (Domanda " " 1 2 3 4 5 6 7 8 ))
+(bind ?scelta (Domanda " " 1 2 3 4 5 6 7 8 9 ))
 (switch ?scelta 
 	(case 1 then (retract ?imp))
 	(case 2 then (retract ?viol))
@@ -768,6 +910,7 @@
 (declare (salience -1001))
 (trovato)
 (libro (nome ?nome) (punteggio ?punteggio) (autore ?autore) (serie ?serie))
+(not (interfaccia))
 =>
 (printout t "-  TITOLO: " ?nome "  RATING: " ?punteggio "/5" "  AUTORE: " ?autore "  SERIE: " ?serie crlf)
 )
