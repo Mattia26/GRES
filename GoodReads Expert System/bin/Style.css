@@ -1,0 +1,17 @@
+.root {
+    
+     -fx-border-color: #000000;
+}
+
+.split-pane{
+	
+	-fx-border-color: #000000;
+}
+
+.list-view{
+	
+	-fx-border-color: #000000;
+}
+.separator{
+	
+}
