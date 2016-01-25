@@ -74,6 +74,7 @@
 (printout t  crlf)
 (printout t  crlf)
 (assert (presentazione))
+(assert (genere nil))
 )
 
 ;FUNZIONI AUSILIARIE
@@ -229,9 +230,9 @@
 (not (lungo ?))
 =>
 (printout t "Vorresti leggere un libro con molte pagine?" crlf)
-(printout t "1)Si" crlf)
+(printout t "1)Sì" crlf)
 (printout t "2)No" crlf)
-(printout t "3)Indifferente" crlf)
+(printout t "3)Non so" crlf)
 (bind ?scelta (Domanda " " 1 2 3))
 (switch ?scelta
 	(case 1 then
@@ -249,7 +250,7 @@
 (printout t "Secondo te un buon romanzo è:" crlf)
 (printout t "1)Divertente" crlf)
 (printout t "2)Serio" crlf)
-(printout t "3)Entrambi" crlf)
+(printout t "3)Non so" crlf)
 (printout t "4)Aiuto" crlf)
 (bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
@@ -268,7 +269,7 @@
 (not (esplicito ?))
 =>
 (printout t "Saresti infastidito da contenuto esplicito?" crlf)
-(printout t "1)Si" crlf)
+(printout t "1)Sì" crlf)
 (printout t "2)No" crlf)
 (bind ?scelta (Domanda " " 1 2))
 (if (= ?scelta 1) then (assert (esplicito no)) else (assert (esplicito si)))
@@ -281,7 +282,7 @@
 (printout t "Secondo te un buon romanzo è:" crlf)
 (printout t "1)Imprevedibile" crlf)
 (printout t "2)Tranquillo" crlf)
-(printout t "3)Entrambi" crlf)
+(printout t "3)Non so" crlf)
 (printout t "4)Aiuto" crlf)
 (bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
@@ -300,7 +301,7 @@
 (not (violento ?))
 =>
 (printout t "Saresti infastidito da contenuto violento?" crlf)
-(printout t "1)Si" crlf)
+(printout t "1)Sì" crlf)
 (printout t "2)No" crlf)
 (bind ?scelta (Domanda " " 1 2))
 (if (= ?scelta 1) then (assert (violento no)) else (assert (violento si)))
@@ -313,7 +314,7 @@
 (printout t "Secondo te un buon romanzo è:" crlf)
 (printout t "1)Impegnativo" crlf)
 (printout t "2)Leggero" crlf)
-(printout t "3)Entrambi" crlf)
+(printout t "3)Non so" crlf)
 (printout t "4)Aiuto" crlf)
 (bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
@@ -334,7 +335,7 @@
 (printout t "Secondo te un buon romanzo è:" crlf)
 (printout t "1)Intenso" crlf)
 (printout t "2)Riflessivo" crlf)
-(printout t "3)Entrambi" crlf)
+(printout t "3)Non so" crlf)
 (printout t "4)Aiuto" crlf)
 (bind ?scelta (Domanda " " 1 2 3 4))
 (switch ?scelta 
@@ -353,9 +354,9 @@
 (not (serie ?))
 =>
 (printout t "Cerchi un romanzo che faccia parte di una serie? (Trilogie, Cicli...)" crlf)
-(printout t "1)Si" crlf)
+(printout t "1)Sì" crlf)
 (printout t "2)No" crlf)
-(printout t "3)Indifferente" crlf)
+(printout t "3)Non so" crlf)
 (bind ?scelta (Domanda " " 1 2 3))
 (switch ?scelta 
 	(case 1 then
@@ -364,9 +365,359 @@
 		(assert (serie no)))
 	(case 3 then
 		(assert (serie indifferente))))
+
+
+)
+
+(defrule kindle 
+(autore ?)
+(not (kindle ?))
+=>
+(printout t "Possiedi un kindle?" crlf)
+(printout t "1)Sì" crlf)
+(printout t "2)No" crlf)
+(printout t "3)Cos'è?" crlf)
+(bind ?scelta (Domanda " " 1 2 3))
+(switch ?scelta
+	(case 1 then
+		(assert (kindle si)))
+	(case 2 then 
+		(assert (kindle no))
+		(assert (ebook nil)))
+	(case 3 then 
+		(assert (aiuto kindle))))
+)
+
+(defrule ebook
+(autore ?)
+(not (ebook ?))
+(kindle si)
+=>
+(printout t "Vuoi cercare un romanzo disponibile come free-ebook nel progetto Gutemberg?" crlf)
+(printout t "1)Sì" crlf)
+(printout t "2)No" crlf)
+(printout t "3)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3))
+(switch ?scelta 
+	(case 1 then 
+		(assert (ebook si)))
+	(case 2 then
+		(assert (ebook no)))
+	(case 3 then
+		(assert (aiuto ebook))))
+)
+
+;REGOLE PER GENERE 
+
+(defrule avventura
+(imprevedibile si|indifferente)
+(intenso si|indifferente)
+(not (ritratta genere))
+(not (genere avventura))
+=>
+(printout t crlf "Stai per caso cercando un romanzo d'avventura? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta
+	(case 1 then 
+		(assert (genere avventura)))
+	(case 4 then
+		(assert (aiuto avventura))))
+)
+
+(defrule storico
+(intenso no|indifferente)
+(leggero no|indifferente)
+(not (ritratta genere))
+(not (genere storico))
+=>
+(printout t crlf "Stai per caso cercando un romanzo storico? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere storico)))
+	(case 4 then
+		(assert (aiuto storico))))
+)
+
+(defrule sociale
+(intenso no|indifferente)
+(leggero no|indifferente)
+(not (ritratta genere))
+(not (genere sociale))
+=>
+(printout t crlf "Stai per caso cercando un romanzo sociale? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere sociale)))
+	(case 4 then
+		(assert (aiuto sociale))))
+)
+
+(defrule psicologico
+(intenso no|indifferente)
+(leggero no|indifferente)
+(imprevedibile no|indifferente)
+(not (ritratta genere))
+(not (genere psicologico))
+=>
+(printout t crlf "Stai per caso cercando un romanzo psicologico? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere psicologico)))
+	(case 4 then
+		(assert (aiuto psicologico))))
+)
+
+(defrule fantastico
+(leggero si|indifferente)
+(imprevedibile si|indifferente)
+(intenso si|indifferente)
+(not (ritratta genere))
+(not (genere fantastico))
+=>
+(printout t crlf "Stai per caso cercando un romanzo fantastico? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere fantastico)))
+	(case 4 then
+		(assert (aiuto fantastico))))
+)
+
+(defrule giallo
+(imprevedibile si|indifferente)
+(intenso no|indifferente)
+(not (ritratta genere))
+(not (genere giallo))
+=>
+(printout t crlf "Stai per caso cercando un romanzo giallo? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere giallo)))
+	(case 4 then
+		(assert (aiuto giallo))))
+)
+
+(defrule nero
+(violento si)
+(intenso si|indifferente)
+(not (ritratta genere))
+(not (genere nero))
+=>
+(printout t crlf "Stai per caso cercando un romanzo gotico? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere nero)))
+	(case 4 then
+		(assert (aiuto nero))))
+)
+
+(defrule rosa
+(esplicito si)
+(intenso si|indifferente)
+(not (ritratta genere))
+(not (genere rosa))
+=>
+(printout t crlf "Stai per caso cercando un romanzo rosa? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere rosa)))
+	(case 4 then
+		(assert (aiuto rosa))))
+)
+
+(defrule fantascienza
+(leggero si|indifferente)
+(imprevedibile si|indifferente)
+(intenso si|indifferente)
+(not (ritratta genere))
+(not (genere fantascienza))
+=>
+(printout t crlf "Stai per caso cercando un romanzo fantascientifico? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere fantascienza)))
+	(case 4 then
+		(assert (aiuto fantascienza))))
 )
 
 ;REGOLE DI AIUTO
+
+(defrule aiuto-fantascienza
+?x <- (aiuto fantascienza)
+=>
+(printout t crlf "La fantascienza ha come tema fondamentale l'impatto di una scienza e/o una tecnologia – reale o immaginaria – sulla società e sull'individuo. I personaggi, oltre che esseri umani, possono essere alieni, robot, cyborg, mostri o mutanti; la storia può essere ambientata nel passato, nel presente o, più frequentemente, nel futuro. Premere INVIO per continuare." crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo fantascientifico? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere fantascienza)))
+	(case 4 then
+		(assert (aiuto fantascienza))))
+)
+
+(defrule aiuto-rosa
+?x <- (aiuto rosa)
+=>
+(printout t crlf "Il romanzo rosa (detto anche romance) è un genere letterario che narra di storie d'amore e del loro intreccio che si dipanano in genere in avventure e intrighi e terminano sempre con un lieto fine. Premere INVIO per continuare." crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo rosa? (Ricorda che puoi scegliere più di un genere)" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere rosa)))
+	(case 4 then
+		(assert (aiuto rosa))))
+)
+
+(defrule aiuto-nero
+?x <- (aiuto nero)
+=>
+(printout t crlf "Il romanzo gotico è un genere narrativo sviluppatosi dalla seconda metà del Settecento e caratterizzato dall'unione di elementi romantici e dell'orrore. L'espressione 'letteratura gotica', riferita alla tendenza culturale sviluppatasi dalla metà del XVIII secolo, è entrata nell'uso comune a partire soprattutto dai paesi anglosassoni e individua solitamente storie ambientate nel Medioevo in castelli diroccati, sotterranei e altri ambienti cupi e tenebrosi. Premere INVIO Per continuare." crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo gotico?" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere nero)))
+	(case 4 then
+		(assert (aiuto nero))))
+)
+
+(defrule aiuto-giallo
+?x <- (aiuto giallo)
+=>
+(printout t crlf "L'oggetto principale della letteratura gialla è la descrizione di un crimine e dei personaggi coinvolti, siano essi criminali o vittime. Si parla in modo più specifico di poliziesco quando, assieme a questi elementi, ha un ruolo centrale la narrazione delle indagini che portano alla luce tutti gli elementi della vicenda criminale. Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo giallo?" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere giallo)))
+	(case 4 then
+		(assert (aiuto giallo))))
+)
+
+(defrule aiuto-fantastico
+?x <- (aiuto fantastico)
+=>
+(printout t crlf "Il fantastico è un genere di narrazione basato sulla rappresentazione di elementi e situazioni immaginarie che esulano dall'esperienza quotidiana, straordinarie, che si ritiene non si verifichino (molto probabilmente) nella realtà comunemente sperimentata. Elementi che possono definire una situazione fantastica sono l'intervento del soprannaturale o del meraviglioso, come la magia o una invenzione tecnologica futuribile. Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo fantastico?" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere fantastico)))
+	(case 4 then
+		(assert (aiuto fantastico))))
+)
+
+(defrule aiuto-psicologico
+?x <- (aiuto psicologico)
+=>
+(printout t crlf "l romanzo psicologico è un tipo di romanzo nato tra l'Ottocento il Novecento, nel clima di crisi e di tensione che caratterizzò gli anni letteratura: da una parte, una chiusura nella propria interiorità, dall'altra una forte esigenza di realismo. Davanti ai drammi della guerra, letteratura era vista come mezzo di autoanalisi e riflessione profonda su di sé. In questo tipo di narrazione la fabula è debole, quasi inesistente e focalizza tutta l'attenzione sui meccanismi mentali dei personaggi. Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo psicologico?" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere psicologico)))
+	(case 4 then
+		(assert (aiuto psicologico))))
+)
+
+
+(defrule aiuto-sociale
+?x <- (aiuto sociale)
+=>
+(printout t crlf "Il romanzo a sfondo sociale (altrimenti detto semplicemente romanzo sociale) si sviluppa nella prima metà dell'Ottocento ed è un genere di romanzo che tratteggia la vita dei ceti sociali economicamente svantaggiati e denuncia situazioni di sopruso e pregiudizio. Premere INVIO per continuare" crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo sociale?" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere sociale)))
+	(case 4 then
+		(assert (aiuto sociale))))
+)
 
 (defrule aiuto-autore
 ?x <- (aiuto autore)
@@ -486,6 +837,89 @@
 		(assert (aiuto intenso))))
 )
 
+(defrule aiuto-kindle
+?x <- (aiuto kindle)
+=>
+(printout t crlf "Kindle è un lettore di ebook o libri elettronici, gli ebook non sono altro che libri normalissimi ma digitalizzati: invece di" crlf 		 "essere stampati su carta sono file. Un ebook reader è dotato di una tecnologia definita e-ink, ovvero inchiostro elettronico o" crlf 		 "carta elettronica, vale a dire una tecnologia progettata per imitare l’aspetto dell’inchiostro su un normale foglio. A differenza" crlf 		 "di un normale schermo, che usa una luce posteriore al display per illuminare i pixel, l’e-paper riflette la luce ambientale come" crlf 		 "un foglio di carta. Premere INVIO per continuare." crlf)
+(get-char)
+(retract ?x)
+(printout t "Possiedi un kindle?" crlf)
+(printout t "1)Sì" crlf)
+(printout t "2)No" crlf)
+(printout t "3)Cos'è?" crlf)
+(bind ?scelta (Domanda " " 1 2 3))
+(switch ?scelta
+	(case 1 then
+		(assert (kindle si)))
+	(case 2 then 
+		(assert (kindle no))
+		(assert (ebook nil)))
+	(case 3 then 
+		(assert (aiuto kindle))))
+)
+
+(defrule aiuto-ebook
+?x <- (aiuto ebook)
+=>
+(printout t crlf "Il Progetto Gutenberg (Project Gutenberg, noto anche con l'acronimo PG) è un'iniziativa avviata dall'informatico Michael Hart nel" crlf 	       "1971 con l'obiettivo di costituire una biblioteca di versioni elettroniche liberamente riproducibili di libri stampati, oggi" 
+crlf 	       "chiamati eBook. Il progetto Gutenberg è la più antica iniziativa del settore. I testi disponibili in questa biblioteca libera sono" crlf 	       "per la maggior parte di pubblico dominio, o in quanto mai coperti da diritto d'autore o da copyright, o in quanto decaduti questi" crlf	       "vincoli.Sono disponibili anche alcuni testi coperti da copyright ma che hanno ottenuto dagli autori il permesso alla nuova forma di" crlf           "pubblicazione.(Selezionando l'opzione sì, si sceglie di cercare libri esclusivamente appartenenti al progetto Premere INVIO per continuare." crlf)
+(get-char)
+(retract ?x)
+(printout t "Vuoi cercare un romanzo disponibile come free-ebook nel progetto Gutemberg?" crlf)
+(printout t "1)Sì" crlf)
+(printout t "2)No" crlf)
+(printout t "3)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3))
+(switch ?scelta 
+	(case 1 then 
+		(assert (ebook si)))
+	(case 2 then
+		(assert (ebook no)))
+	(case 3 then
+		(assert (aiuto ebook))))
+)
+
+
+(defrule aiuto-avventura
+?x <- (aiuto avventura)
+=>
+(printout t crlf "Il romanzo di avventura è un genere letterario che nasce nel XVIII secolo e che narra di viaggi in terre lontane e quindi celebra il coraggio e l'ingegno umano. L'incontro fra diverse culture offre uno spunto per riflettere e criticare la società in cui l'autore vive, ma anche per esaltarne i valori. Premere INVIO per continuare." crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo d'avventura?" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta
+	(case 1 then 
+		(assert (genere avventura)))
+	(case 4 then
+		(assert (aiuto avventura))))
+)
+
+(defrule aiuto-storico
+?x <- (aiuto storico)
+=>
+(printout t crlf "Il romanzo storico è un'opera narrativa ambientata in un'epoca passata, della quale ricostruisce le atmosfere, gli usi, i costumi, la mentalità e la vita in genere, così da farli rivivere al lettore. Secondo l'Enciclopedia Britannica, un romanzo si definisce storico quando 'è ambientato in un'epoca storica e intende trasmetterne lo spirito, i comportamenti e le condizioni sociali attraverso dettagli realistici e con un'aderenza (in molti casi solo apparente) ai fatti documentati.' Premere INVIO per continuare." crlf)
+(get-char)
+(retract ?x)
+(printout t crlf "Stai per caso cercando un romanzo storico?" crlf
+		"1)Si" crlf
+		"2)No" crlf
+		"3)Non so" crlf
+		"4)Aiuto" crlf)
+(bind ?scelta (Domanda " " 1 2 3 4))
+(switch ?scelta 
+	(case 1 then
+		(assert (genere storico)))
+	(case 4 then
+		(assert (aiuto storico))))
+)
+
+
+
 ;REGOLE DI FINE ESECUZIONE
 
 (defrule fallimento
@@ -495,7 +929,7 @@
 (not (interfaccia))
 =>
 (printout t crlf "Mi dispiace, non sono riuscito a trovare nessun libro" crlf)
-(printout t "con le caratteristiche richieste, ora puoi procedere nei seguenti modi:" crlf)
+(printout t "con le caratteristiche richieste, ora puoi procedere nei seguenti modi:" crlf crlf)
 (printout t "1)Provare a cercare un altro libro" crlf)
 (printout t "2)Modificare qualche risposta" crlf)
 (printout t "3)Uscire" crlf)
@@ -532,17 +966,32 @@
 	(case 1 then 
 		(reset)
 		(assert (presentazione))
+		(assert (genere nil))
 		(run))
 	(case 2 then
 		(assert (ritratta))
 		(retract ?x)))
 )
 
+(defrule rimuovi-genere
+(genere ~nil)
+?x <- (genere nil)
+=>
+(retract ?x)
+)
+
+(defrule genere-nil
+(declare (salience -100))
+(not (genere ?))
+=>
+(assert (genere nil))
+)
+
 
 ;REGOLA PER RITRATTARE FATTI
 
 (defrule ritratta
-
+(declare (salience -1))
 ?rit <- (ritratta)
 ?imp <- (imprevedibile ?attr1)
 ?viol <- (violento ?attr2)
@@ -552,7 +1001,10 @@
 ?lun <- (lungo ?attr6)
 ?div <- (divertente ?attr7)
 ?int <- (intenso ?attr8)
+?gut <- (ebook  ?attr9)
+?gen <- (genere ?attr10)
 =>
+
 (printout t "Si sono scelte le seguenti caratteristiche per il libro da trovare: " crlf)
 (switch ?attr1
 	(case si then
@@ -603,41 +1055,60 @@
 		(printout t "8)Riflessivo" crlf))
 	(case indifferente then
 		(printout t "8)Intenso/Riflessivo" crlf)))
+(switch ?attr9
+	(case si then
+		(printout t "9)Facente parte del progetto Gutemberg" crlf))
+	(case  no  then
+		(printout t "9)Anche facente parte del progetto Gutemberg" crlf))
+	(case  nil  then
+		(printout t "9)Anche facente parte del progetto Gutemberg" crlf)))
 
-(printout t "9)Riprova" crlf)
+(if (eq ?attr10 nil) then (printout t "10)Nessun genere in particolare" crlf)
+	else (printout t "10)Generi:" crlf)
+	     (do-for-all-facts ((?p genere)) TRUE (printout t "            " (str-cat (nth$ 1 (fact-slot-value ?p implied))) crlf)))
+
+(printout t "11)Riprova" crlf)
 
 (printout t "Scegliere la caratteristica da ritrattare: ")
-(bind ?scelta (Domanda " " 1 2 3 4 5 6 7 8 9 ))
+(bind ?scelta (Domanda " " 1 2 3 4 5 6 7 8 9 10 11))
 (switch ?scelta 
-	(case 1 then (retract ?imp))
-	(case 2 then (retract ?viol))
-	(case 3 then (retract ?legg))
-	(case 4 then (retract ?ser))
-	(case 5 then (retract ?espl))
-	(case 6 then (retract ?lun))
-	(case 7 then (retract ?div))
-	(case 8 then (retract ?int))
-	(case 9 then (retract ?rit)))
+	(case 1 then (retract ?imp) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 2 then (retract ?viol) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 3 then (retract ?legg) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 4 then (retract ?ser) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 5 then (retract ?espl) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 6 then (retract ?lun) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 7 then (retract ?div) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 8 then (retract ?int) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 9 then (retract ?gut) (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 10 then (do-for-all-facts ((?g genere)) TRUE (retract ?g)) 
+		      (retract (assert (ritratta genere)))
+		      (do-for-all-facts ((?p libro)) TRUE (retract ?p)))
+	(case 11 then (retract ?rit)
+			))
 )
 
  
 ;REGOLE PER LA SCELTA DEI LIBRI
 
 (defrule the-casual-vacancy
+(genere giallo|psicologico|nil)
 (imprevedibile si|indifferente)
 (violento si)
 (leggero no|indifferente)
 (serie no|indifferente)
-(esplicito no)
+(esplicito no|si)
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "The Casual Vacancy") (punteggio "3.26") (autore "J.K.Rowling")))
 (assert (trovato))
 )
 
 (defrule lo-hobbit
+(genere fantastico|avventura|nil)
 (imprevedibile si|indifferente)
 (violento si)
 (leggero no|indifferente)
@@ -646,12 +1117,14 @@
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "Lo Hobbit") (punteggio "4.22") (autore "J.R.R. Tolkien")))
 (assert (trovato))
 )
 
 (defrule il-signore-degli-anelli
+(genere fantastico|avventura|nil)
 (imprevedibile si|indifferente)
 (violento si)
 (leggero no|indifferente)
@@ -660,12 +1133,14 @@
 (lungo si|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "Il Signore degli Anelli") (punteggio "4.40") (autore "J.R.R Tolkien") (serie "Il Signore degli Anelli")))
 (assert (trovato))
 )
 
 (defrule il-silmarillion
+(genere fantastico|nil)
 (imprevedibile no|indifferente)
 (violento si)
 (leggero no|indifferente)
@@ -674,12 +1149,14 @@
 (lungo si|indifferente)
 (divertente no|indifferente)
 (intenso no|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "Il Silmarillion") (punteggio "3.84") (autore "J.R.R Tolkien")))
 (assert (trovato))
 )
 
 (defrule racconto-di-due-città
+(genere storico|sociale|nil)
 (imprevedibile no|indifferente)
 (violento si)
 (leggero no|indifferente)
@@ -688,12 +1165,14 @@
 (lungo si|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook si|nil)
 =>
 (assert (libro (nome "Racconto di Due Città") (punteggio "3.78") (autore "Charles Dickens")))
 (assert (trovato))
 )
 
 (defrule oliver-twist
+(genere sociale|psicologico|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -702,12 +1181,14 @@
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "Oliver Twist") (punteggio "3.83") (autore "Charles Dickens")))
 (assert (trovato))
 )
 
 (defrule david-copperfield
+(genere psicologico|storico|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero no|indifferente)
@@ -716,12 +1197,14 @@
 (lungo si|indifferente)
 (divertente no|indifferente)
 (intenso no|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "David Copperfield") (punteggio "3.94") (autore "Charles Dickens")))
 (assert (trovato))
 )
 
 (defrule uno-studio-in-rosso
+(genere giallo|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -730,12 +1213,14 @@
 (lungo no|indifferente)
 (divertente si|indifferente)
 (intenso si|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "Uno Studio in Rosso") (punteggio "4.13") (autore "Sir Arthur Conan Doyle")))
 (assert (trovato))
 )
 
 (defrule il-mastino-dei-baskerville
+(genere giallo|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -744,12 +1229,14 @@
 (lungo no|indifferente)
 (divertente si|indifferente)
 (intenso si|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "Il Mastino dei Baskerville") (punteggio "4.06") (autore "Sir Arthur Conan Doyle")))
 (assert (trovato))
 )
 
 (defrule la-valle-della-paura
+(genere giallo|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -758,12 +1245,14 @@
 (lungo no|indifferente)
 (divertente si|indifferente)
 (intenso si|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "La Valle della Paura") (punteggio "4.20") (autore "Sir Arthur Conan Doyle")))
 (assert (trovato))
 )
 
 (defrule io-robot
+(genere giallo|fantascienza|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -772,12 +1261,14 @@
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "Io,Robot") (punteggio "4.14") (autore "Isaac Asimov") (serie "Ciclo dei Robot")))
 (assert (trovato))
 )
 
 (defrule abissi-acciaio
+(genere giallo|fantascienza|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -786,12 +1277,14 @@
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "Abissi d'Acciaio") (punteggio "4.12") (autore "Isaac Asimov") (serie "Ciclo dei Robot")))
 (assert (trovato))
 )
 
 (defrule il-sole-nudo
+(genere giallo|fantascienza|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -800,12 +1293,14 @@
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "Il Sole Nudo") (punteggio "4.09") (autore "Isaac Asimov") (serie "Ciclo dei Robot")))
 (assert (trovato))
 )
 
 (defrule millenovecentoottantaquattro
+(genere sociale|psicologico|nil)
 (imprevedibile si|indifferente)
 (violento si)
 (leggero no|indifferente)
@@ -814,12 +1309,14 @@
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso no|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "1984") (punteggio "4.80") (autore "George Orwell")))
 (assert (trovato))
 )
 
 (defrule la-fattoria-degli-animali
+(genere psicologico|nil)
 (imprevedibile no|indifferente)
 (violento no|si)
 (leggero no|indifferente)
@@ -828,12 +1325,14 @@
 (lungo no|indifferente)
 (divertente no|indifferente)
 (intenso no|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "La Fattoria degli Animali") (punteggio "3.83") (autore "George Orwell")))
 (assert (trovato))
 )
 
 (defrule la-caduta-dei-giganti
+(genere storico|sociale|rosa|avventura|nil)
 (imprevedibile no|indifferente)
 (violento si)
 (leggero si|indifferente)
@@ -842,12 +1341,14 @@
 (lungo si|indifferente)
 (divertente no|indifferente)
 (intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "La Caduta dei Giganti") (punteggio "4.22") (autore "Ken Follett") (serie "Trilogia del Secolo")))
 (assert (trovato))
 )
 
 (defrule l-ombra-dello-scorpione
+(genere avventura|nero|fantastico|nil)
 (imprevedibile si|indifferente)
 (violento si)
 (leggero si|indifferente)
@@ -856,12 +1357,14 @@
 (divertente no|indifferente)
 (lungo si|indifferente)
 (intenso no|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "L'Ombra dello Scorpione") (punteggio "4.32") (autore "Stephen King")))
 (assert (trovato))
 )
 
 (defrule l-ultimo-cavaliere
+(genere avventura|fantastico|nil)
 (imprevedibile si|indifferente)
 (violento si)
 (leggero no|indifferente)
@@ -869,13 +1372,15 @@
 (esplicito si)
 (divertente no|indifferente)
 (lungo no|indifferente)
-(intenso no|indifferente)
+(intenso si|indifferente)
+(ebook no|nil)
 =>
 (assert (libro (nome "L'Ultimo Cavaliere") (punteggio "4.00") (autore "Stephen King") (serie "Saga della Torre Nera")))
 (assert (trovato))
 )
 
 (defrule le-avventure-di-huckleberry-finn
+(genere sociale|avventura|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -884,12 +1389,14 @@
 (divertente si|indifferente)
 (lungo no|indifferente)
 (intenso no|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "Le Avventure di Huckleberry Finn") (punteggio "3.66") (autore "Mark Twain")))
 (assert (trovato))
 )
 
 (defrule lo-strano-caso-del-dr
+(genere fantastico|giallo|nil)
 (imprevedibile si|indifferente)
 (violento no|si)
 (leggero si|indifferente)
@@ -898,6 +1405,7 @@
 (divertente no|indifferente)
 (lungo no|indifferente)
 (intenso no|indifferente)
+(ebook si|no|nil)
 =>
 (assert (libro (nome "Lo Strano Caso del Dr. Jeckill e Mr. Hyde") (punteggio "3.70") (autore "Fernando Marìas")))
 (assert (trovato))
