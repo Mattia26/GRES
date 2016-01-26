@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="441.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.RegistrazioneController">
+   <children>
+      <Label layoutX="176.0" layoutY="14.0" text="Registrazione" />
+      <GridPane layoutX="14.0" layoutY="53.0" prefHeight="114.0" prefWidth="402.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="129.0" minWidth="10.0" prefWidth="107.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="225.0" minWidth="10.0" prefWidth="185.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Label layoutX="14.0" layoutY="58.0" text="Username" />
+            <Label layoutX="14.0" layoutY="88.0" text="Password" GridPane.rowIndex="1" />
+            <TextField fx:id="username" layoutX="135.0" layoutY="53.0" GridPane.columnIndex="1" />
+            <Label layoutX="14.0" layoutY="120.0" text="Data di nascita" GridPane.rowIndex="2" />
+            <DatePicker fx:id="data" layoutX="135.0" layoutY="115.0" prefHeight="25.0" prefWidth="268.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <PasswordField fx:id="password" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+      <Label layoutX="63.0" layoutY="192.0" text="Autore preferito" />
+      <Label layoutX="280.0" layoutY="192.0" text="Genere preferito" />
+      <ComboBox fx:id="autore" layoutX="24.0" layoutY="215.0" prefHeight="25.0" prefWidth="200.0" />
+      <ComboBox fx:id="genere" layoutX="264.0" layoutY="215.0" prefHeight="25.0" prefWidth="157.0" />
+      <Button layoutX="180.0" layoutY="263.0" mnemonicParsing="false" onAction="#conferma" text="Conferma" />
+      <Button layoutX="342.0" layoutY="263.0" mnemonicParsing="false" onAction="#annulla" text="Annulla" />
+   </children>
+</AnchorPane>
