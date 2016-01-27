@@ -15,3 +15,5 @@ Per avviare il progetto senza l'opzione di login direttamente su console clips b
 >(clear)
 >(load GRES.clp)
 >(run)
+
+In caso si avvii il progetto da jar in una cartella differente da questa in cui risiede questo documento, prego ricordarsi di creare nella stessa directory in cui viene posto il file jar una cartella chiamata Utenti!
